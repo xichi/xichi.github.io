@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>西池</title>
+  
+    <link rel="icon" href="http://njupt.xichi.xyz/homepage/me.jpg">
+  
+  
+  
+  <!--link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.10.0/styles/github-gist.min.css"-->
+  
+<link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.10.0/styles/github-gist.min.css">
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+<div class="Shell">
+    <aside class='SideBar'>
+    <section class='avatar' style="background-image: url()">
+        <div class='av-pic' style="background-image: url(http://njupt.xichi.xyz/homepage/me.jpg)">
+        </div>
+    </section>
+    <section class='menu'>
+        <div>西池</div>
+        
+        <ul>
+          
+            <a href="/" class="Btn">
+              <li>Home</li>
+            </a>  
+          
+            <a href="/archives/" class="Btn">
+              <li>Archive</li>
+            </a>  
+          
+        </ul>
+    </section>
+    <section class="media">
+        
+            
+                <a target="_blank" rel="noopener" href="https://github.com/1999-XiChi">
+                    <img src="/assets/github.svg" />
+                </a>
+            
+        
+    </section>
+</aside>
+
+    <div class="container">
+        <div data-pager-shell>
+            <ul class="Index">
+  
+    <header class='PageTitle'>
+        <h1>{ 网页渲染 }</h1>
+    </header>
+  
+  
+    <li>
+      <article class='ListView'>
+    <header class="title">
+      
+        <h1>
+          <a href="/2020/09/07/%E6%B5%8F%E8%A7%88%E5%99%A8%E6%B8%B2%E6%9F%93%E6%9C%BA%E5%88%B6/">网页渲染及优化</a>
+        </h1>
+      
+      <div class='ListMeta'>
+  <time datetime="2020-09-07T08:08:47.000Z" itemprop="datePublished">
+    2020-09-07
+  </time>
+  
+  | 
+  <ul>
+    
+  <li class="meta-text">
+  { <a href="/tags/%E4%BC%98%E5%8C%96/">优化</a> }
+  </li>
+
+  <li class="meta-text">
+  { <a href="/tags/%E7%BD%91%E9%A1%B5%E6%B8%B2%E6%9F%93/">网页渲染</a> }
+  </li>
+
+
+  </ul>
+  
+  
+</div>
+
+    </header>
+    <div>
+      
+        <h2 id="0-引言"><a href="#0-引言" class="headerlink" title="0.引言"></a>0.引言</h2><p>浏览器的内核是指支持浏览器运行的最核心的程序，分为两个部分的，一是<strong>渲染引擎</strong>，另一个是<strong>JS引擎</strong>。</p>
+<p><img src="http://njupt.xichi.xyz/blog/20200303154953.png"></p>
+<p><strong>问题5</strong>：</p>
+<ul>
+<li>FOUC：由于浏览器渲染机制（比如firefox），再CSS加载之前，先呈现了HTML，就会导致展示出无样式内容，然后样式突然呈现的现象；</li>
+<li>白屏：有些浏览器渲染机制（比如chrome）要先构建DOM树和CSSOM树，构建完成后再进行渲染，如果CSS部分放在HTML尾部，由于CSS未加载完成，浏览器迟迟未渲染，从而导致白屏；也可能是把js文件放在头部，脚本会阻塞后面内容的呈现，脚本会阻塞其后组件的下载，出现白屏问题。</li>
+</ul>
+<p>具体参照：</p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/53913989">深入浅出浏览器渲染原理 - Fundebug的文章 - 知乎</a></p>
+        
+          <div class="more-link">
+            <a href="/2020/09/07/%E6%B5%8F%E8%A7%88%E5%99%A8%E6%B8%B2%E6%9F%93%E6%9C%BA%E5%88%B6/#more">Read On »</a>
+          </div>
+        
+      
+    </div>
+</article>
+
+    </li>
+  
+</ul>
+
+
+
+            <footer>
+    <div>© 2021 - XiChi </div>
+    <div>
+        <span>
+            Powered by <a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a>
+        </span>
+        ,
+        <span>
+            Theme - <a target="_blank" rel="noopener" href="https://github.com/nameoverflow/hexo-theme-icalm">Icalm</a>
+        </span>
+    </div>
+</footer>
+
+        </div>
+    </div>
+</div>
+
+<script src="/js/pager/dist/singlepager.js"></script>
+
+<script>
+var sp = new Pager('data-pager-shell')
+
+</script>
+</body>
+</html>

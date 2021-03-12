@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>网页渲染及优化 | 西池</title>
+  
+    <link rel="icon" href="http://njupt.xichi.xyz/homepage/me.jpg">
+  
+  
+  
+  <!--link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.10.0/styles/github-gist.min.css"-->
+  
+<link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.10.0/styles/github-gist.min.css">
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+<div class="Shell">
+    <aside class='SideBar'>
+    <section class='avatar' style="background-image: url()">
+        <div class='av-pic' style="background-image: url(http://njupt.xichi.xyz/homepage/me.jpg)">
+        </div>
+    </section>
+    <section class='menu'>
+        <div>西池</div>
+        
+        <ul>
+          
+            <a href="/" class="Btn">
+              <li>Home</li>
+            </a>  
+          
+            <a href="/archives/" class="Btn">
+              <li>Archive</li>
+            </a>  
+          
+        </ul>
+    </section>
+    <section class="media">
+        
+            
+                <a target="_blank" rel="noopener" href="https://github.com/1999-XiChi">
+                    <img src="/assets/github.svg" />
+                </a>
+            
+        
+    </section>
+</aside>
+
+    <div class="container">
+        <div data-pager-shell>
+            <div>
+  <article class='ContentView'>
+    <header class='PageTitle'>
+        <h1>网页渲染及优化</h1>
+    </header>
+
+    <section>
+      <h2 id="0-引言"><a href="#0-引言" class="headerlink" title="0.引言"></a>0.引言</h2><p>浏览器的内核是指支持浏览器运行的最核心的程序，分为两个部分的，一是<strong>渲染引擎</strong>，另一个是<strong>JS引擎</strong>。</p>
+<p><img src="http://njupt.xichi.xyz/blog/20200303154953.png"></p>
+<p><strong>问题5</strong>：</p>
+<ul>
+<li>FOUC：由于浏览器渲染机制（比如firefox），再CSS加载之前，先呈现了HTML，就会导致展示出无样式内容，然后样式突然呈现的现象；</li>
+<li>白屏：有些浏览器渲染机制（比如chrome）要先构建DOM树和CSSOM树，构建完成后再进行渲染，如果CSS部分放在HTML尾部，由于CSS未加载完成，浏览器迟迟未渲染，从而导致白屏；也可能是把js文件放在头部，脚本会阻塞后面内容的呈现，脚本会阻塞其后组件的下载，出现白屏问题。</li>
+</ul>
+<p>具体参照：</p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/53913989">深入浅出浏览器渲染原理 - Fundebug的文章 - 知乎</a></p>
+<span id="more"></span>
+
+<h2 id="1-网页生成过程"><a href="#1-网页生成过程" class="headerlink" title="1.网页生成过程"></a>1.网页生成过程</h2><ol>
+<li>HTML被HTML解析器解析成DOM 树</li>
+<li>css则被css解析器解析成CSSOM 树</li>
+<li>结合DOM树和CSSOM树，生成一棵渲染树(Render Tree)<ul>
+<li>从DOM树的根节点开始遍历每个可见节点(display:none;的是不可见节点)。</li>
+<li>对于每个可见的节点，找到CSSOM树中对应的规则，并应用它们。</li>
+<li>根据每个可见节点以及其对应的样式，组合生成渲染树。</li>
+</ul>
+</li>
+<li>生成布局（flow），即将所有渲染树的所有节点进行平面合成</li>
+<li>将布局绘制（paint）在屏幕上</li>
+</ol>
+<p>第四步和第五步是最耗时的部分，这两步合起来，就是我们通常所说的<strong>渲染</strong>。</p>
+<p><img src="http://njupt.xichi.xyz/blog/20200303110907.png"></p>
+<h2 id="2-重排（回流）"><a href="#2-重排（回流）" class="headerlink" title="2.重排（回流）"></a>2.重排（回流）</h2><p>任何会改变元素几何信息(元素的位置和尺寸大小)的操作，都会触发重排。重排需要更新渲染树,性能花销非常大。</p>
+<h3 id="重排范围"><a href="#重排范围" class="headerlink" title="重排范围"></a>重排范围</h3><ol>
+<li><p>全局范围</p>
+</li>
+<li><p>局部范围：</p>
+<p>把一个dom的宽高之类的几何信息定死，然后在dom内部触发重排</p>
+<p>​</p>
+</li>
+</ol>
+<h2 id="3-重绘"><a href="#3-重绘" class="headerlink" title="3.重绘"></a>3.重绘</h2><p>当一个元素的外观发生改变，但没有改变布局,重新把元素外观绘制出来的过程（比如color、outline、visibility）。比<strong>重排</strong>的花销要大很多。</p>
+<h2 id="4-浏览器渲染队列"><a href="#4-浏览器渲染队列" class="headerlink" title="4.浏览器渲染队列"></a>4.浏览器渲染队列</h2><p>当我们修改了元素的几何属性，导致浏览器触发重排或重绘时。它会把该操作放进渲染队列，等到队列中的操作到了<strong>一定的数量或者到了一定的时间间隔</strong>时，浏览器就会批量执行这些操作。</p>
+<p>比如：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">div.style.left = <span class="string">&#x27;10px&#x27;</span>;</span><br><span class="line">div.style.top = <span class="string">&#x27;10px&#x27;</span>;</span><br><span class="line">div.style.width = <span class="string">&#x27;20px&#x27;</span>;</span><br><span class="line">div.style.height = <span class="string">&#x27;20px&#x27;</span>;</span><br></pre></td></tr></table></figure>
+
+<p>这段代码理论上会触发4次重排+重绘，因为每一次都改变了元素的几何属性，实际上最后只触发了一次重排，这都得益于浏览器的<strong>渲染队列机制</strong>。但是垃圾浏览器可能还是会触发多次重排+重绘。</p>
+<blockquote>
+<p><strong>强制刷新队列的style样式请求</strong>：</p>
+<ol>
+<li>offsetTop, offsetLeft, offsetWidth, offsetHeight</li>
+<li>scrollTop, scrollLeft, scrollWidth, scrollHeight</li>
+<li>clientTop, clientLeft, clientWidth, clientHeight</li>
+<li>getComputedStyle(), 或者 IE的 currentStyle</li>
+</ol>
+</blockquote>
+<h2 id="5-优化"><a href="#5-优化" class="headerlink" title="5.优化"></a>5.优化</h2><h3 id="a-分离读写操作"><a href="#a-分离读写操作" class="headerlink" title="a.分离读写操作"></a>a.分离读写操作</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//bad</span></span><br><span class="line">div.style.left = <span class="string">&#x27;10px&#x27;</span>;</span><br><span class="line"><span class="built_in">console</span>.log(div.offsetLeft);</span><br><span class="line">div.style.top = <span class="string">&#x27;10px&#x27;</span>;</span><br><span class="line"><span class="built_in">console</span>.log(div.offsetTop);</span><br><span class="line"><span class="comment">//good</span></span><br><span class="line">div.style.left = <span class="string">&#x27;10px&#x27;</span>;</span><br><span class="line">div.style.top = <span class="string">&#x27;10px&#x27;</span>;</span><br><span class="line"><span class="built_in">console</span>.log(div.offsetLeft);</span><br><span class="line"><span class="built_in">console</span>.log(div.offsetTop);</span><br></pre></td></tr></table></figure>
+
+<p>上面触发2次重排+重绘的代码，这次只触发了一次重排。在第一个<code>console</code>的时候，浏览器把之前上面2个写操作的渲染队列都给清空了。剩下的console，因为渲染队列本来就是空的，所以并没有触发重排，仅仅拿值而已。</p>
+<h3 id="b-样式集中改变"><a href="#b-样式集中改变" class="headerlink" title="b.样式集中改变"></a>b.样式集中改变</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">el.className += <span class="string">&quot; theclassname&quot;</span>;</span><br><span class="line"><span class="comment">// or</span></span><br><span class="line">el.style.cssText += <span class="string">&quot;; left: &quot;</span> + left + <span class="string">&quot;px; top: &quot;</span> + top + <span class="string">&quot;px;&quot;</span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="c-缓存布局信息"><a href="#c-缓存布局信息" class="headerlink" title="c.缓存布局信息"></a>c.缓存布局信息</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// bad 强制刷新 触发两次重排</span></span><br><span class="line">div.style.left = div.offsetLeft + <span class="number">1</span> + <span class="string">&#x27;px&#x27;</span>;</span><br><span class="line">div.style.top = div.offsetTop + <span class="number">1</span> + <span class="string">&#x27;px&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// good 缓存布局信息 相当于读写分离</span></span><br><span class="line"><span class="keyword">var</span> curLeft = div.offsetLeft;</span><br><span class="line"><span class="keyword">var</span> curTop = div.offsetTop;</span><br><span class="line">div.style.left = curLeft + <span class="number">1</span> + <span class="string">&#x27;px&#x27;</span>;</span><br><span class="line">div.style.top = curTop + <span class="number">1</span> + <span class="string">&#x27;px&#x27;</span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="d-position属性为absolute或fixed的元素，重排开销比较小"><a href="#d-position属性为absolute或fixed的元素，重排开销比较小" class="headerlink" title="d.position属性为absolute或fixed的元素，重排开销比较小"></a>d.position属性为absolute或fixed的元素，重排开销比较小</h3><h3 id="e-动画优化——GPU硬件加速"><a href="#e-动画优化——GPU硬件加速" class="headerlink" title="e.动画优化——GPU硬件加速"></a>e.动画优化——GPU硬件加速</h3><p>动画卡顿是在移动web开发时经常遇到的问题，解决这个问题一般会用到<strong>css3硬件加速</strong>。简单来说：通过GPU进行渲染，解放CPU。</p>
+<h4 id="原理："><a href="#原理：" class="headerlink" title="原理："></a>原理：</h4><p>transform会创建一个图层，GPU会来执行transform的操作，这个图层且称为复合图层(composited layer)。</p>
+<p><img src="http://njupt.xichi.xyz/blog/20200303132220.png"></p>
+<p>图4-1：绿色蒙版为repaint 区域（使用 <code>top</code> 和 <code>left</code> 的示例）</p>
+<p><img src="http://njupt.xichi.xyz/blog/20200303132146.png"></p>
+<p>图4-2：橙色区域为复合图层（使用<code>transform</code> 的示例）</p>
+<h4 id="可以触发复合图层的情况："><a href="#可以触发复合图层的情况：" class="headerlink" title="可以触发复合图层的情况："></a>可以触发复合图层的情况：</h4><ul>
+<li>3D 或者 CSS transform</li>
+<li><code>&lt;video&gt;</code> 和 <code>&lt;canvas&gt;</code> 标签</li>
+<li>CSS filters</li>
+<li>元素覆盖时，比如使用了 <code>z-index</code> 属性</li>
+</ul>
+<p>如果页面建立了过多的复合图层，同样也会造成页面的卡顿。</p>
+<h4 id="可以触发硬件加速的css属性："><a href="#可以触发硬件加速的css属性：" class="headerlink" title="可以触发硬件加速的css属性："></a>可以触发<strong>硬件加速</strong>的css属性：</h4><ul>
+<li><p><code>transform</code></p>
+</li>
+<li><p><code>opacity</code></p>
+</li>
+<li><p><code>filter</code></p>
+<p>​</p>
+</li>
+</ul>
+<p><strong>缺点</strong>：</p>
+<p>GPU渲染会影响字体的抗锯齿效果。</p>
+<h4 id="show-me-the-code"><a href="#show-me-the-code" class="headerlink" title="show me the code"></a>show me the code</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * 根据上面的结论</span></span><br><span class="line"><span class="comment"> * 将 2d transform 换成 3d</span></span><br><span class="line"><span class="comment"> * 就可以强制开启 GPU 加速</span></span><br><span class="line"><span class="comment"> * 提高动画性能</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line">div &#123;</span><br><span class="line">  transform: translate3d(10px, 10px, <span class="number">0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/53913989">深入浅出浏览器渲染原理 - Fundebug的文章 - 知乎</a> 开头的大纲出自于此</li>
+<li><a target="_blank" rel="noopener" href="https://juejin.im/post/5c15f797f265da61141c7f86"> 浏览器重绘(repaint)重排(reflow)与优化浏览器机制 </a></li>
+<li><a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000017329980">你真的了解回流和重绘吗</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/f8b1d6e598db">css3硬件加速 </a> 归纳总结的不错</li>
+<li><a target="_blank" rel="noopener" href="https://www.w3cplus.com/css3/introduction-to-hardware-acceleration-css-animations.html">css3之硬件加速 </a></li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/47407398">图解浏览器的基本工作原理 - zhangwang的文章 - 知乎</a> 还讲了网络请求方面的内容</li>
+</ol>
+
+
+      
+
+    </section>
+    
+      <section class='ArticleMeta'>
+          <div>
+            发布于&nbsp;
+            <time datetime="2020-09-07T08:08:47.000Z" itemprop="datePublished">
+              2020-09-07
+            </time>
+          </div>
+          
+            <div>
+              tags: 
+  <li class="meta-text">
+  { <a href="/tags/%E4%BC%98%E5%8C%96/">优化</a> }
+  </li>
+
+  <li class="meta-text">
+  { <a href="/tags/%E7%BD%91%E9%A1%B5%E6%B8%B2%E6%9F%93/">网页渲染</a> }
+  </li>
+
+
+            </div>
+          
+      </section>
+    
+    
+</article>
+
+  
+</div>
+
+            <footer>
+    <div>© 2021 - XiChi </div>
+    <div>
+        <span>
+            Powered by <a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a>
+        </span>
+        ,
+        <span>
+            Theme - <a target="_blank" rel="noopener" href="https://github.com/nameoverflow/hexo-theme-icalm">Icalm</a>
+        </span>
+    </div>
+</footer>
+
+        </div>
+    </div>
+</div>
+
+<script src="/js/pager/dist/singlepager.js"></script>
+
+<script>
+var sp = new Pager('data-pager-shell')
+
+</script>
+</body>
+</html>

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>解决首屏加载过慢的方案：chunk-vendor缩小术 | 西池</title>
+  
+    <link rel="icon" href="http://njupt.xichi.xyz/homepage/me.jpg">
+  
+  
+  
+  <!--link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.10.0/styles/github-gist.min.css"-->
+  
+<link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.10.0/styles/github-gist.min.css">
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+<div class="Shell">
+    <aside class='SideBar'>
+    <section class='avatar' style="background-image: url()">
+        <div class='av-pic' style="background-image: url(http://njupt.xichi.xyz/homepage/me.jpg)">
+        </div>
+    </section>
+    <section class='menu'>
+        <div>西池</div>
+        
+        <ul>
+          
+            <a href="/" class="Btn">
+              <li>Home</li>
+            </a>  
+          
+            <a href="/archives/" class="Btn">
+              <li>Archive</li>
+            </a>  
+          
+        </ul>
+    </section>
+    <section class="media">
+        
+            
+                <a target="_blank" rel="noopener" href="https://github.com/1999-XiChi">
+                    <img src="/assets/github.svg" />
+                </a>
+            
+        
+    </section>
+</aside>
+
+    <div class="container">
+        <div data-pager-shell>
+            <div>
+  <article class='ContentView'>
+    <header class='PageTitle'>
+        <h1>解决首屏加载过慢的方案：chunk-vendor缩小术</h1>
+    </header>
+
+    <section>
+      <p>我写南邮影协主页项目时发现，首屏加载很慢，会白屏5s左右，而实际loading动画才出现不到1s。凶手就是——chunk-vendor！</p>
+<p><img src="http://njupt.xichi.xyz/blog/slowSpeed.jpg"></p>
+<span id="more"></span>
+
+<h2 id="一、路由按需加载"><a href="#一、路由按需加载" class="headerlink" title="一、路由按需加载"></a>一、路由按需加载</h2><p><strong>注意点</strong>：</p>
+<ul>
+<li>require.ensure()</li>
+<li>把子路由组件放在父路由下</li>
+</ul>
+<p>拿这个网页的路由加载举个例子： <a target="_blank" rel="noopener" href="http://www.xichi.xyz/">XiChi’s HOMEPAGE</a></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//router.js</span></span><br><span class="line"><span class="keyword">import</span> VueRouter <span class="keyword">from</span> <span class="string">&#x27;vue-router&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> index = <span class="function"><span class="params">r</span> =&gt;</span> <span class="built_in">require</span>.ensure([], <span class="function">() =&gt;</span> r(<span class="built_in">require</span>(<span class="string">&#x27;@/pages/index.vue&#x27;</span>)), <span class="string">&#x27;index&#x27;</span>)</span><br><span class="line"><span class="keyword">const</span> home = <span class="function"><span class="params">r</span> =&gt;</span> <span class="built_in">require</span>.ensure([], <span class="function">() =&gt;</span> r(<span class="built_in">require</span>(<span class="string">&#x27;@/pages/cards/home.vue&#x27;</span>)), <span class="string">&#x27;home&#x27;</span>)</span><br><span class="line"><span class="keyword">const</span> work = <span class="function"><span class="params">r</span> =&gt;</span> <span class="built_in">require</span>.ensure([], <span class="function">() =&gt;</span> r(<span class="built_in">require</span>(<span class="string">&#x27;@/pages/cards/work.vue&#x27;</span>)), <span class="string">&#x27;work&#x27;</span>)</span><br><span class="line"><span class="keyword">const</span> info = <span class="function"><span class="params">r</span> =&gt;</span> <span class="built_in">require</span>.ensure([], <span class="function">() =&gt;</span> r(<span class="built_in">require</span>(<span class="string">&#x27;@/pages/cards/info.vue&#x27;</span>)), <span class="string">&#x27;info&#x27;</span>)</span><br><span class="line"><span class="keyword">const</span> more = <span class="function"><span class="params">r</span> =&gt;</span> <span class="built_in">require</span>.ensure([], <span class="function">() =&gt;</span> r(<span class="built_in">require</span>(<span class="string">&#x27;@/pages/cards/more.vue&#x27;</span>)), <span class="string">&#x27;more&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> router = <span class="keyword">new</span> VueRouter(&#123;</span><br><span class="line">  routes: [</span><br><span class="line">    &#123;</span><br><span class="line">      path: <span class="string">&#x27;/&#x27;</span>, <span class="attr">redirect</span>: <span class="string">&#x27;/home&#x27;</span>,<span class="attr">component</span>: index, <span class="attr">children</span>: [</span><br><span class="line">        &#123;</span><br><span class="line">          path: <span class="string">&#x27;home&#x27;</span>, <span class="attr">component</span>: home</span><br><span class="line">        &#125;, &#123;</span><br><span class="line">          path: <span class="string">&#x27;work&#x27;</span>, <span class="attr">component</span>: work</span><br><span class="line">        &#125;, &#123;</span><br><span class="line">          path: <span class="string">&#x27;info&#x27;</span>, <span class="attr">component</span>: info</span><br><span class="line">        &#125;, &#123;</span><br><span class="line">          path: <span class="string">&#x27;more&#x27;</span>, <span class="attr">component</span>: more</span><br><span class="line">        &#125;</span><br><span class="line">      ]</span><br><span class="line">    &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> router</span><br></pre></td></tr></table></figure>
+
+<p>这样的话，只有点击到相应路由时才会加载work、info等路由组件。</p>
+<p><img src="http://njupt.xichi.xyz/blog/QQ%E5%9B%BE%E7%89%8720200306154616.png"></p>
+<h2 id="二、开启本地gizp"><a href="#二、开启本地gizp" class="headerlink" title="二、开启本地gizp"></a>二、开启本地gizp</h2><ul>
+<li><p>方案一：前端将文件打包成.gz文件，然后通过nginx的配置，让浏览器直接解析.gz文件(<code>compression-webpack-plugin</code>) </p>
+<p>（和gzip在线解压相比，更少占用cpu，速度稍微快一点）</p>
+</li>
+<li><p>方案二：前端直接拆包(<code>commons-chunk-plugin</code>)</p>
+</li>
+</ul>
+<p>我使用方案一。</p>
+<h3 id="1-前端配置"><a href="#1-前端配置" class="headerlink" title="1.前端配置"></a>1.前端配置</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//gzip</span></span><br><span class="line"><span class="keyword">const</span> CompressionWebpackPlugin = <span class="built_in">require</span>(<span class="string">&#x27;compression-webpack-plugin&#x27;</span>)</span><br><span class="line"><span class="keyword">const</span> productionGzip = <span class="literal">true</span> <span class="comment">// 是否使用gzip</span></span><br><span class="line"><span class="keyword">const</span> productionGzipExtensions = [<span class="string">&#x27;js&#x27;</span>, <span class="string">&#x27;css&#x27;</span>] <span class="comment">// 需要gzip压缩的文件后缀</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//export</span></span><br><span class="line">configureWebpack: <span class="function"><span class="params">config</span> =&gt;</span> &#123; <span class="comment">//简单配置</span></span><br><span class="line">    <span class="keyword">const</span> myConfig = &#123;&#125;</span><br><span class="line">    <span class="keyword">if</span> (process.env.NODE_ENV === <span class="string">&#x27;production&#x27;</span>) &#123;</span><br><span class="line">      <span class="comment">// gzip</span></span><br><span class="line">      myConfig.plugins = []</span><br><span class="line">      <span class="comment">// 2. 构建时开启gzip，降低服务器压缩对CPU资源的占用，服务器也要相应开启gzip</span></span><br><span class="line">      productionGzip &amp;&amp; myConfig.plugins.push(</span><br><span class="line">        <span class="keyword">new</span> CompressionWebpackPlugin(&#123;</span><br><span class="line">          algorithm: <span class="string">&#x27;gzip&#x27;</span>,</span><br><span class="line">          test: <span class="keyword">new</span> <span class="built_in">RegExp</span>(<span class="string">&#x27;\\.(&#x27;</span> + productionGzipExtensions.join(<span class="string">&#x27;|&#x27;</span>) + <span class="string">&#x27;)$&#x27;</span>),</span><br><span class="line">          threshold: <span class="number">10240</span>,</span><br><span class="line">          minRatio: <span class="number">0.8</span></span><br><span class="line">        &#125;)</span><br><span class="line">      )</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> myConfig</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-服务器Nginx配置"><a href="#2-服务器Nginx配置" class="headerlink" title="2.服务器Nginx配置"></a>2.服务器Nginx配置</h3><p><strong>注意</strong>：别忘了<code>gzip_static on;</code>，这样浏览器才是直接解析.gz文件，而不是在线压缩</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">gzip on;</span><br><span class="line">gzip_static on;</span><br><span class="line">gzip_min_length  1k;</span><br><span class="line">gzip_buffers     4 16k;</span><br><span class="line">gzip_http_version 1.1;</span><br><span class="line">gzip_comp_level 5;</span><br><span class="line">gzip_types     text&#x2F;plain application&#x2F;javascript application&#x2F;x-javascript text&#x2F;javascript text&#x2F;css application&#x2F;xml;</span><br><span class="line">gzip_vary on;</span><br><span class="line">gzip_proxied   expired no-cache no-store private auth;</span><br><span class="line">gzip_disable   &quot;MSIE [1-6]\.&quot;;</span><br></pre></td></tr></table></figure>
+
+<h4 id="判断是否拿取gz文件"><a href="#判断是否拿取gz文件" class="headerlink" title="判断是否拿取gz文件"></a>判断是否拿取gz文件</h4><blockquote>
+<p>首先判断<code>content-encoding: gzip</code><br>有表示开启了gzip;没有表示没开启gzip;</p>
+<p>有的情况下<br>再看看<code>Etag</code>有没有<code>W\</code>,<br>有:代表服务器在线压缩</p>
+<p>没有:表示拿了.gz,说明gzip_static生效了</p>
+</blockquote>
+<h3 id="3-对比一下"><a href="#3-对比一下" class="headerlink" title="3.对比一下"></a>3.对比一下</h3><p>图1.未压缩（<code>gzip off;</code>）</p>
+<p><img src="http://njupt.xichi.xyz/blog/sad.png" alt="未压缩"></p>
+<p>图2：gzip在线压缩（<code>gzip on;</code>、<code>gzip_static off;</code>）</p>
+<p><img src="http://njupt.xichi.xyz/blog/slowSpeed.jpg"></p>
+<p>图3：本地压缩gzip（<code>gzip on;</code>、<code>gzip_static on;</code>）</p>
+<p><img src="http://njupt.xichi.xyz/blog/QQ%E5%9B%BE%E7%89%8720200306192548.png" alt="gzip_static"></p>
+<p><strong>伤心的发现：本地压缩和gzip在线压缩没啥区别，都很慢55555。看来不得不采取第三步cdn加速了。</strong></p>
+<h2 id="三、cdn加速"><a href="#三、cdn加速" class="headerlink" title="三、cdn加速"></a>三、cdn加速</h2><h3 id="1-修改public目录下的index-html"><a href="#1-修改public目录下的index-html" class="headerlink" title="1.修改public目录下的index.html"></a>1.修改public目录下的index.html</h3><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span> <span class="attr">lang</span>=<span class="string">&quot;en&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">&quot;utf-8&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">http-equiv</span>=<span class="string">&quot;X-UA-Compatible&quot;</span> <span class="attr">content</span>=<span class="string">&quot;IE=edge&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">name</span>=<span class="string">&quot;viewport&quot;</span> <span class="attr">content</span>=<span class="string">&quot;width=device-width,initial-scale=1.0&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">link</span> <span class="attr">rel</span>=<span class="string">&quot;icon&quot;</span> <span class="attr">href</span>=<span class="string">&quot;./icon.png&quot;</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!-- 使用CDN加速的CSS文件，配置在vue.config.js下 --&gt;</span></span><br><span class="line">    &lt;% for (var i in</span><br><span class="line">    htmlWebpackPlugin.options.cdn&amp;&amp;htmlWebpackPlugin.options.cdn.css) &#123; %&gt;</span><br><span class="line">    &lt;link</span><br><span class="line">      href=&quot;&lt;%= htmlWebpackPlugin.options.cdn.css[i] %&gt;&quot;</span><br><span class="line">      rel=&quot;preload&quot;</span><br><span class="line">      as=&quot;style&quot;</span><br><span class="line">    /&gt;</span><br><span class="line">    <span class="tag">&lt;<span class="name">link</span> <span class="attr">href</span>=<span class="string">&quot;&lt;%= htmlWebpackPlugin.options.cdn.css[i] %&gt;&quot;</span> <span class="attr">rel</span>=<span class="string">&quot;stylesheet&quot;</span> /&gt;</span></span><br><span class="line">    &lt;% &#125; %&gt;</span><br><span class="line">    <span class="comment">&lt;!-- 使用CDN加速的JS文件，配置在vue.config.js下 预加载--&gt;</span></span><br><span class="line">    &lt;% for (var i in</span><br><span class="line">    htmlWebpackPlugin.options.cdn&amp;&amp;htmlWebpackPlugin.options.cdn.js) &#123; %&gt;</span><br><span class="line">    &lt;link</span><br><span class="line">      href=&quot;&lt;%= htmlWebpackPlugin.options.cdn.js[i] %&gt;&quot;</span><br><span class="line">      rel=&quot;preload&quot;</span><br><span class="line">      as=&quot;script&quot;</span><br><span class="line">    /&gt;</span><br><span class="line">    &lt;% &#125; %&gt;</span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">title</span>&gt;</span>南邮电影协会<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">noscript</span>&gt;</span></span><br><span class="line">      &lt;strong</span><br><span class="line">        &gt;We&#x27;re sorry but awsome-ui doesn&#x27;t work properly without JavaScript</span><br><span class="line">        enabled. Please enable it to continue.&lt;/strong</span><br><span class="line">      &gt;</span><br><span class="line">      <span class="tag">&lt;<span class="name">strong</span>&gt;</span>请及时联系开发者.QQ:474504964<span class="tag">&lt;/<span class="name">strong</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">noscript</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">&quot;app&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- built files will be auto injected --&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!-- 使用CDN加速的JS文件，配置在vue.config.js下 --&gt;</span></span><br><span class="line">    &lt;% for (var i in</span><br><span class="line">    htmlWebpackPlugin.options.cdn&amp;&amp;htmlWebpackPlugin.options.cdn.js) &#123; %&gt;</span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;&lt;%= htmlWebpackPlugin.options.cdn.js[i] %&gt;&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">    &lt;% &#125; %&gt;</span><br><span class="line">    </span><br><span class="line">  <span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="2-修改vue-config-js"><a href="#2-修改vue-config-js" class="headerlink" title="2.修改vue.config.js"></a>2.修改vue.config.js</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//cdn</span></span><br><span class="line"><span class="comment">// cdn预加载使用</span></span><br><span class="line"><span class="keyword">const</span> externals = &#123;</span><br><span class="line">  <span class="string">&#x27;vue&#x27;</span>: <span class="string">&#x27;Vue&#x27;</span>,</span><br><span class="line">  <span class="string">&#x27;vue-router&#x27;</span>: <span class="string">&#x27;VueRouter&#x27;</span>,</span><br><span class="line">  <span class="string">&#x27;vuex&#x27;</span>: <span class="string">&#x27;Vuex&#x27;</span>,</span><br><span class="line">  <span class="string">&#x27;axios&#x27;</span>: <span class="string">&#x27;axios&#x27;</span>,</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">const</span> cdn = &#123;</span><br><span class="line">  <span class="comment">// 开发环境</span></span><br><span class="line">  dev: &#123;</span><br><span class="line">    css: [],</span><br><span class="line">    js: []</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="comment">// 生产环境</span></span><br><span class="line">  build: &#123;</span><br><span class="line">    css: [</span><br><span class="line">      </span><br><span class="line">    ],</span><br><span class="line">    js: [</span><br><span class="line">      <span class="string">&#x27;https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.min.js&#x27;</span>,</span><br><span class="line">      <span class="string">&#x27;https://cdn.jsdelivr.net/npm/vue-router@3.1.3/dist/vue-router.min.js&#x27;</span>,</span><br><span class="line">      <span class="string">&#x27;https://cdn.jsdelivr.net/npm/vuex@3.1.1/dist/vuex.min.js&#x27;</span>,</span><br><span class="line">      <span class="string">&#x27;https://cdn.jsdelivr.net/npm/axios@0.19.2/dist/axios.min.js&#x27;</span>,</span><br><span class="line">    ]</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//export</span></span><br><span class="line">configureWebpack: <span class="function"><span class="params">config</span> =&gt;</span> &#123; <span class="comment">//简单配置</span></span><br><span class="line">    <span class="keyword">const</span> myConfig = &#123;&#125;</span><br><span class="line">    <span class="keyword">if</span> (process.env.NODE_ENV === <span class="string">&#x27;production&#x27;</span>) &#123;</span><br><span class="line">      <span class="comment">// 1. 生产环境npm包转CDN</span></span><br><span class="line">      myConfig.externals = externals</span><br><span class="line">    &#125;</span><br><span class="line">&#125; </span><br><span class="line">chainWebpack: <span class="function"><span class="params">config</span> =&gt;</span> &#123; <span class="comment">//高级配置</span></span><br><span class="line">  <span class="comment">// 使用cdn</span></span><br><span class="line">  config.plugin(<span class="string">&#x27;html&#x27;</span>).tap(<span class="function"><span class="params">args</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (process.env.NODE_ENV === <span class="string">&#x27;production&#x27;</span>) &#123;</span><br><span class="line">      args[<span class="number">0</span>].cdn = cdn.build</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (process.env.NODE_ENV === <span class="string">&#x27;development&#x27;</span>) &#123;</span><br><span class="line">      args[<span class="number">0</span>].cdn = cdn.dev</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> args</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="http://njupt.xichi.xyz/blog/QQ%E5%9B%BE%E7%89%8720200306222933.png"></p>
+<p>只压缩了一点点</p>
+<p>还发现：element-ui的cdn加载要4s多，太慢了。</p>
+<h2 id="四、取消注释"><a href="#四、取消注释" class="headerlink" title="四、取消注释"></a>四、取消注释</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//去掉注释</span></span><br><span class="line"><span class="keyword">const</span> UglifyJsPlugin = <span class="built_in">require</span>(<span class="string">&#x27;uglifyjs-webpack-plugin&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">//export</span></span><br><span class="line">configureWebpack: <span class="function"><span class="params">config</span> =&gt;</span> &#123; <span class="comment">//简单配置</span></span><br><span class="line">    <span class="keyword">const</span> myConfig = &#123;&#125;</span><br><span class="line">    <span class="keyword">if</span> (process.env.NODE_ENV === <span class="string">&#x27;production&#x27;</span>) &#123;</span><br><span class="line">      <span class="comment">// 1. 生产环境npm包转CDN</span></span><br><span class="line">      myConfig.externals = externals</span><br><span class="line">      </span><br><span class="line">       <span class="comment">// 去掉注释</span></span><br><span class="line">       myConfig.plugins.push(</span><br><span class="line">        <span class="keyword">new</span> UglifyJsPlugin(&#123;</span><br><span class="line">          uglifyOptions: &#123;</span><br><span class="line">            output: &#123;</span><br><span class="line">              comments: <span class="literal">false</span>, <span class="comment">// 去掉注释</span></span><br><span class="line">            &#125;,</span><br><span class="line">            compress: &#123;</span><br><span class="line">              warnings: <span class="literal">false</span>,</span><br><span class="line">              drop_console: <span class="literal">true</span>,</span><br><span class="line">              drop_debugger: <span class="literal">false</span>,</span><br><span class="line">              pure_funcs: [<span class="string">&#x27;console.log&#x27;</span>]<span class="comment">//移除console</span></span><br><span class="line">          &#125;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;)</span><br><span class="line">      )</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> myConfig</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="http://njupt.xichi.xyz/blog/sorrow.png"></p>
+<p>只压缩了一点点，伤心</p>
+<h2 id="五、webpack-bundle-analyzer-来帮我分析一下"><a href="#五、webpack-bundle-analyzer-来帮我分析一下" class="headerlink" title="五、webpack-bundle-analyzer 来帮我分析一下"></a>五、<code>webpack-bundle-analyzer</code> 来帮我分析一下</h2><p>通过使用webpack-bundle-analyzer可以看到项目各模块的大小，可以按需优化。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Analyzer</span></span><br><span class="line"><span class="keyword">const</span> BundleAnalyzerPlugin = <span class="built_in">require</span>(<span class="string">&#x27;webpack-bundle-analyzer&#x27;</span>).BundleAnalyzerPlugin;</span><br><span class="line"></span><br><span class="line"><span class="comment">//configureWebpack</span></span><br><span class="line"><span class="comment">//process.env.NODE_ENV === &#x27;production&#x27;</span></span><br><span class="line">myConfig.plugins.push(</span><br><span class="line">  <span class="keyword">new</span> BundleAnalyzerPlugin()</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p>然后打包（build）的时候会自动生成：</p>
+<p><img src="http://njupt.xichi.xyz/blog/QQ%E5%9B%BE%E7%89%8720200306222900.jpg"></p>
+<p>发现@fortawesome特别大：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//main.js</span></span><br><span class="line"><span class="keyword">import</span> &#123; library &#125; <span class="keyword">from</span> <span class="string">&#x27;@fortawesome/fontawesome-svg-core&#x27;</span></span><br><span class="line"><span class="keyword">import</span> &#123; fas &#125; <span class="keyword">from</span> <span class="string">&#x27;@fortawesome/free-solid-svg-icons&#x27;</span></span><br><span class="line"><span class="keyword">import</span> &#123; far &#125; <span class="keyword">from</span> <span class="string">&#x27;@fortawesome/free-regular-svg-icons&#x27;</span></span><br><span class="line"><span class="keyword">import</span> &#123; fab &#125; <span class="keyword">from</span> <span class="string">&#x27;@fortawesome/free-brands-svg-icons&#x27;</span></span><br><span class="line"><span class="keyword">import</span> &#123; FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText &#125;</span><br><span class="line"> <span class="keyword">from</span> <span class="string">&#x27;@fortawesome/vue-fontawesome&#x27;</span></span><br><span class="line"> </span><br><span class="line">library.add(fas, far, fab)</span><br><span class="line"> </span><br><span class="line">Vue.component(<span class="string">&#x27;font-awesome-icon&#x27;</span>, FontAwesomeIcon)</span><br><span class="line">Vue.component(<span class="string">&#x27;font-awesome-layers&#x27;</span>, FontAwesomeLayers)</span><br><span class="line">Vue.component(<span class="string">&#x27;font-awesome-layers-text&#x27;</span>, FontAwesomeLayersText) </span><br></pre></td></tr></table></figure>
+
+<p>当我把它注释掉以后，再次打包时，体积明显缩小。首屏加载时间控制在1s左右。</p>
+<p><img src="http://njupt.xichi.xyz/blog/QQ%E5%9B%BE%E7%89%8720200306222928.png"></p>
+<p><img src="http://njupt.xichi.xyz/blog/QQ%E5%9B%BE%E7%89%8720200306222922.png"></p>
+<p>后续：改进引入svg图标的方式，明天再说，886！</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/957ed8a7ca73">发布前端项目时因chunk-vendors过大导致首屏加载太慢</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/5a543a0284f6">webpack使用CommonsChunkPlugin拆包心得</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/cb13f845b204">vue-cli3 之vue.config.js配置</a></li>
+</ol>
+
+
+      
+
+    </section>
+    
+      <section class='ArticleMeta'>
+          <div>
+            发布于&nbsp;
+            <time datetime="2020-12-06T14:47:12.000Z" itemprop="datePublished">
+              2020-12-06
+            </time>
+          </div>
+          
+            <div>
+              tags: 
+  <li class="meta-text">
+  { <a href="/tags/%E4%BC%98%E5%8C%96/">优化</a> }
+  </li>
+
+  <li class="meta-text">
+  { <a href="/tags/webpack/">webpack</a> }
+  </li>
+
+
+            </div>
+          
+      </section>
+    
+    
+</article>
+
+  
+</div>
+
+            <footer>
+    <div>© 2021 - XiChi </div>
+    <div>
+        <span>
+            Powered by <a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a>
+        </span>
+        ,
+        <span>
+            Theme - <a target="_blank" rel="noopener" href="https://github.com/nameoverflow/hexo-theme-icalm">Icalm</a>
+        </span>
+    </div>
+</footer>
+
+        </div>
+    </div>
+</div>
+
+<script src="/js/pager/dist/singlepager.js"></script>
+
+<script>
+var sp = new Pager('data-pager-shell')
+
+</script>
+</body>
+</html>

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>TypeScript进阶 | 西池</title>
+  
+    <link rel="icon" href="http://njupt.xichi.xyz/homepage/me.jpg">
+  
+  
+  
+  <!--link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.10.0/styles/github-gist.min.css"-->
+  
+<link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.10.0/styles/github-gist.min.css">
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+<div class="Shell">
+    <aside class='SideBar'>
+    <section class='avatar' style="background-image: url()">
+        <div class='av-pic' style="background-image: url(http://njupt.xichi.xyz/homepage/me.jpg)">
+        </div>
+    </section>
+    <section class='menu'>
+        <div>西池</div>
+        
+        <ul>
+          
+            <a href="/" class="Btn">
+              <li>Home</li>
+            </a>  
+          
+            <a href="/archives/" class="Btn">
+              <li>Archive</li>
+            </a>  
+          
+        </ul>
+    </section>
+    <section class="media">
+        
+            
+                <a target="_blank" rel="noopener" href="https://github.com/1999-XiChi">
+                    <img src="/assets/github.svg" />
+                </a>
+            
+        
+    </section>
+</aside>
+
+    <div class="container">
+        <div data-pager-shell>
+            <div>
+  <article class='ContentView'>
+    <header class='PageTitle'>
+        <h1>TypeScript进阶</h1>
+    </header>
+
+    <section>
+      <p>前篇：<a href="https://blog.xichi.xyz/2020/06/05/typescript%E5%85%A5%E9%97%A8/">typescript入门</a></p>
+<p>是个人对<a target="_blank" rel="noopener" href="https://ts.xcatliu.com/advanced/type-aliases">TypeScript入门课程</a>的归纳总结，用于未来回顾复习。如果您点进这篇文章，欢迎去原文学习哦，是非常简洁全面的入门课程，一个下午即可看完~</p>
+<span id="more"></span> 
+
+<h2 id="类型别名"><a href="#类型别名" class="headerlink" title="类型别名"></a>类型别名</h2><p>类型别名用来给一个类型起个新名字。</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Name = <span class="built_in">string</span>;</span><br><span class="line"><span class="keyword">type</span> NameResolver = <span class="function">() =&gt;</span> <span class="built_in">string</span>;</span><br><span class="line"><span class="keyword">type</span> NameOrResolver = Name | NameResolver;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">getName</span>(<span class="params">n: NameOrResolver</span>): <span class="title">Name</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">typeof</span> n === <span class="string">&#x27;string&#x27;</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> n;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> n();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="元组"><a href="#元组" class="headerlink" title="元组"></a>元组</h2><p>数组合并了相同类型的对象，而元组（Tuple）合并了不同类型的对象。</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> tom: [<span class="built_in">string</span>, <span class="built_in">number</span>] = [<span class="string">&#x27;Tom&#x27;</span>, <span class="number">25</span>];</span><br></pre></td></tr></table></figure>
+
+<p>添加越界的元素：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> tom: [<span class="built_in">string</span>, <span class="built_in">number</span>];</span><br><span class="line">tom = [<span class="string">&#x27;Tom&#x27;</span>, <span class="number">25</span>];</span><br><span class="line">tom.push(<span class="string">&#x27;male&#x27;</span>);</span><br><span class="line">tom.push(<span class="literal">true</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// Argument of type &#x27;true&#x27; is not assignable to parameter of type &#x27;string | number&#x27;.</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="枚举"><a href="#枚举" class="headerlink" title="枚举"></a>枚举</h2><p>枚举（Enum）类型用于取值被限定在一定范围内的场景，比如一周只能有七天，颜色限定为红绿蓝等。</p>
+<p>枚举使用 <code>enum</code> 关键字来定义：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">enum</span> Days &#123;Sun, Mon, Tue, Wed, Thu, Fri, Sat&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>枚举成员会被赋值为从 <code>0</code> 开始递增的数字，同时也会对枚举值到枚举名进行反向映射。</p>
+<h3 id="常数枚举"><a href="#常数枚举" class="headerlink" title="常数枚举"></a>常数枚举</h3><p>常数枚举是使用 <code>const enum</code> 定义的枚举类型：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">onst <span class="built_in">enum</span> Directions &#123;</span><br><span class="line">    Up,</span><br><span class="line">    Down,</span><br><span class="line">    Left,</span><br><span class="line">    Right</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> directions = [Directions.Up, Directions.Down, Directions.Left, Directions.Right];</span><br></pre></td></tr></table></figure>
+
+<p>常数枚举与普通枚举的区别是，它会在编译阶段被删除，并且不能包含计算成员。</p>
+<p>上例的编译结果是：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> directions = [<span class="number">0</span> <span class="comment">/* Up */</span>, <span class="number">1</span> <span class="comment">/* Down */</span>, <span class="number">2</span> <span class="comment">/* Left */</span>, <span class="number">3</span> <span class="comment">/* Right */</span>];</span><br></pre></td></tr></table></figure>
+
+<p>假如包含了计算成员，则会在编译阶段报错。</p>
+<h2 id="类"><a href="#类" class="headerlink" title="类"></a>类</h2><p>传统方法中，JavaScript 通过构造函数实现类的概念，通过原型链实现继承。而在 ES6 中，我们终于迎来了 <code>class</code>。</p>
+<p>TypeScript 除了实现了所有 ES6 中的类的功能以外，还添加了一些新的用法。</p>
+<h3 id="i-类的概念"><a href="#i-类的概念" class="headerlink" title="i).类的概念"></a>i).类的概念</h3><p>虽然 JavaScript 中有类的概念，但是可能大多数 JavaScript 程序员并不是非常熟悉类，这里对类相关的概念做一个简单的介绍。</p>
+<ul>
+<li>类(Class)：定义了一件事物的抽象特点，包含它的属性和方法</li>
+<li>对象（Object）：类的实例，通过 <code>new</code> 生成</li>
+<li>面向对象（OOP）的三大特性：封装、继承、多态</li>
+<li>封装（Encapsulation）：将对数据的操作细节隐藏起来，只暴露对外的接口。外界调用端不需要（也不可能）知道细节，就能通过对外提供的接口来访问该对象，同时也保证了外界无法任意更改对象内部的数据</li>
+<li>继承（Inheritance）：子类继承父类，子类除了拥有父类的所有特性外，还有一些更具体的特性</li>
+<li>多态（Polymorphism）：由继承而产生了相关的不同的类，对同一个方法可以有不同的响应。比如 <code>Cat</code> 和 <code>Dog</code> 都继承自 <code>Animal</code>，但是分别实现了自己的 <code>eat</code> 方法。此时针对某一个实例，我们无需了解它是 <code>Cat</code> 还是 <code>Dog</code>，就可以直接调用 <code>eat</code> 方法，程序会自动判断出来应该如何执行 <code>eat</code></li>
+<li>存取器（getter &amp; setter）：用以改变属性的读取和赋值行为</li>
+<li>修饰符（Modifiers）：修饰符是一些关键字，用于限定成员或类型的性质。比如 <code>public</code> 表示公有属性或方法</li>
+<li>抽象类（Abstract Class）：抽象类是供其他类继承的基类，抽象类不允许被实例化。抽象类中的抽象方法必须在子类中被实现</li>
+<li>接口（Interfaces）：不同类之间公有的属性或方法，可以抽象成一个接口。接口可以被类实现（implements）。一个类只能继承自另一个类，但是可以实现多个接口</li>
+</ul>
+<h3 id="ii-TypeScript中类的用法"><a href="#ii-TypeScript中类的用法" class="headerlink" title="ii).TypeScript中类的用法"></a>ii).TypeScript中类的用法</h3><blockquote>
+<p>如果忘记ES6+中类的用法，可以查看</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://ts.xcatliu.com/advanced/class">TypeScript入门教程 - ES6中类的用法</a></li>
+<li><a target="_blank" rel="noopener" href="https://es6.ruanyifeng.com/#docs/class">ECMAScript 6 入门 - Class</a></li>
+</ul>
+</blockquote>
+<ul>
+<li><p>访问修饰符（Access Modifiers）</p>
+<ul>
+<li><code>public</code></li>
+<li><code>private</code>不能在声明它的类的外部访问</li>
+<li><code>protected</code> 它和 <code>private</code> 类似，区别是它在子类中也是允许被访问的</li>
+</ul>
+</li>
+<li><p>抽象类</p>
+<p><code>abstract</code> 用于定义抽象类和其中的抽象方法</p>
+<ul>
+<li><p>不允许被实例化</p>
+  <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Animal</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> name;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="title">constructor</span>(<span class="params">name</span>)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.name = name;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">abstract</span> sayHi();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> a = <span class="keyword">new</span> Animal(<span class="string">&#x27;Jack&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// index.ts(9,11): error TS2511: Cannot create an instance of the abstract class &#x27;Animal&#x27;</span></span><br></pre></td></tr></table></figure></li>
+<li><p>抽象类中的抽象方法必须被子类实现</p>
+  <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Animal</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> name;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="title">constructor</span>(<span class="params">name</span>)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.name = name;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">abstract</span> sayHi();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Cat</span> <span class="keyword">extends</span> <span class="title">Animal</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="title">eat</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">`<span class="subst">$&#123;<span class="built_in">this</span>.name&#125;</span> is eating.`</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> cat = <span class="keyword">new</span> Cat(<span class="string">&#x27;Tom&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// index.ts(9,7): error TS2515: Non-abstract class &#x27;Cat&#x27; does not implement inherited abstract member &#x27;sayHi&#x27; from class &#x27;Animal&#x27;.</span></span><br></pre></td></tr></table></figure>
+<p>下面是一个正确使用抽象类的例子：</p>
+  <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Animal</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> name;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="title">constructor</span>(<span class="params">name</span>)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.name = name;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">abstract</span> sayHi();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Cat</span> <span class="keyword">extends</span> <span class="title">Animal</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="title">sayHi</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">`Meow, My name is <span class="subst">$&#123;<span class="built_in">this</span>.name&#125;</span>`</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> cat = <span class="keyword">new</span> Cat(<span class="string">&#x27;Tom&#x27;</span>);</span><br></pre></td></tr></table></figure></li>
+<li><p>类的类型</p>
+<p>给类加上 TypeScript 的类型很简单，与接口类似：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Animal</span> </span>&#123;</span><br><span class="line">    name: <span class="built_in">string</span>;</span><br><span class="line">    <span class="function"><span class="title">constructor</span>(<span class="params">name: <span class="built_in">string</span></span>)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.name = name;</span><br><span class="line">    &#125;</span><br><span class="line">    sayHi(): <span class="built_in">string</span> &#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="string">`My name is <span class="subst">$&#123;<span class="built_in">this</span>.name&#125;</span>`</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> a: Animal = <span class="keyword">new</span> Animal(<span class="string">&#x27;Jack&#x27;</span>);</span><br><span class="line"><span class="built_in">console</span>.log(a.sayHi()); <span class="comment">// My name is Jack</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ul>
+<h2 id="类与接口"><a href="#类与接口" class="headerlink" title="类与接口"></a>类与接口</h2><p>实现（implements）是面向对象中的一个重要概念。一般来讲，一个类只能继承自另一个类，有时候不同类之间可以有一些共有的特性，这时候就可以把特性提取成接口（interfaces），用 <code>implements</code> 关键字来实现。</p>
+<h3 id="1-类实现接口"><a href="#1-类实现接口" class="headerlink" title="1.类实现接口"></a>1.类实现接口</h3><p>报警器作为一个接口，防盗门和车都去实现它。</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">interface</span> Alarm &#123;</span><br><span class="line">    alert(): <span class="built_in">void</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Door</span> </span>&#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SecurityDoor</span> <span class="keyword">extends</span> <span class="title">Door</span> <span class="title">implements</span> <span class="title">Alarm</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="title">alert</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">&#x27;SecurityDoor alert&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Car</span> <span class="title">implements</span> <span class="title">Alarm</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="title">alert</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">&#x27;Car alert&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>一个类可以实现多个接口。</p>
+<h3 id="2-接口继承接口"><a href="#2-接口继承接口" class="headerlink" title="2.接口继承接口"></a>2.接口继承接口</h3><figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">interface</span> Alarm &#123;</span><br><span class="line">    alert(): <span class="built_in">void</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">interface</span> LightableAlarm <span class="keyword">extends</span> Alarm &#123;</span><br><span class="line">    lightOn(): <span class="built_in">void</span>;</span><br><span class="line">    lightOff(): <span class="built_in">void</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-接口继承类"><a href="#3-接口继承类" class="headerlink" title="3.接口继承类"></a>3.接口继承类</h3><p>常见的面向对象语言中，接口是不能继承类的，但是在 TypeScript 中却是可以的：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Point</span> </span>&#123;</span><br><span class="line">    x: <span class="built_in">number</span>;</span><br><span class="line">    y: <span class="built_in">number</span>;</span><br><span class="line">    <span class="function"><span class="title">constructor</span>(<span class="params">x: <span class="built_in">number</span>, y: <span class="built_in">number</span></span>)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.x = x;</span><br><span class="line">        <span class="built_in">this</span>.y = y;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">interface</span> Point3d <span class="keyword">extends</span> Point &#123;</span><br><span class="line">    z: <span class="built_in">number</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> point3d: Point3d = &#123;<span class="attr">x</span>: <span class="number">1</span>, <span class="attr">y</span>: <span class="number">2</span>, <span class="attr">z</span>: <span class="number">3</span>&#125;;</span><br></pre></td></tr></table></figure>
+
+<p><strong>为什么 TypeScript 会支持接口继承类呢？</strong></p>
+<p>实际上，当我们在声明 <code>class Point</code> 时，除了会创建一个名为 <code>Point</code> 的类之外，同时也创建了一个名为 <code>Point</code> 的类型（实例的类型）。</p>
+<p>当我们声明 <code>interface Point3d extends Point</code> 时，<code>Point3d</code> 继承的实际上是类 <code>Point</code> 的实例的类型。换句话说，可以理解为定义了一个接口 <code>Point3d</code> 继承另一个接口 <code>PointInstanceType</code>。</p>
+<p>所以「接口继承类」和「接口继承接口」没有什么本质的区别。</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Point</span> </span>&#123;</span><br><span class="line">    x: <span class="built_in">number</span>;</span><br><span class="line">    y: <span class="built_in">number</span>;</span><br><span class="line">    <span class="function"><span class="title">constructor</span>(<span class="params">x: <span class="built_in">number</span>, y: <span class="built_in">number</span></span>)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.x = x;</span><br><span class="line">        <span class="built_in">this</span>.y = y;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">interface</span> PointInstanceType &#123;</span><br><span class="line">    x: <span class="built_in">number</span>;</span><br><span class="line">    y: <span class="built_in">number</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 等价于 interface Point3d extends PointInstanceType</span></span><br><span class="line"><span class="keyword">interface</span> Point3d <span class="keyword">extends</span> Point &#123;</span><br><span class="line">    z: <span class="built_in">number</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> point3d: Point3d = &#123;<span class="attr">x</span>: <span class="number">1</span>, <span class="attr">y</span>: <span class="number">2</span>, <span class="attr">z</span>: <span class="number">3</span>&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>值得注意的是，<code>PointInstanceType</code> 相比于 <code>Point</code>，缺少了 <code>constructor</code> 方法，这是因为声明 <code>Point</code> 类时创建的 <code>Point</code> 类型是不包含构造函数的。另外，除了构造函数是不包含的，静态属性或静态方法也是不包含的（实例的类型当然不应该包括构造函数、静态属性或静态方法）。</p>
+<p>换句话说，声明 <code>Point</code> 类时创建的 <code>Point</code> 类型只包含其中的实例属性和实例方法：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Point</span> </span>&#123;</span><br><span class="line">    <span class="comment">/** 静态属性，坐标系原点 */</span></span><br><span class="line">    <span class="keyword">static</span> origin = <span class="keyword">new</span> Point(<span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">    <span class="comment">/** 静态方法，计算与原点距离 */</span></span><br><span class="line">    <span class="keyword">static</span> <span class="function"><span class="title">distanceToOrigin</span>(<span class="params">p: Point</span>)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">Math</span>.sqrt(p.x * p.x + p.y * p.y);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/** 实例属性，x 轴的值 */</span></span><br><span class="line">    x: <span class="built_in">number</span>;</span><br><span class="line">    <span class="comment">/** 实例属性，y 轴的值 */</span></span><br><span class="line">    y: <span class="built_in">number</span>;</span><br><span class="line">    <span class="comment">/** 构造函数 */</span></span><br><span class="line">    <span class="function"><span class="title">constructor</span>(<span class="params">x: <span class="built_in">number</span>, y: <span class="built_in">number</span></span>)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.x = x;</span><br><span class="line">        <span class="built_in">this</span>.y = y;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/** 实例方法，打印此点 */</span></span><br><span class="line">    <span class="function"><span class="title">printPoint</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="built_in">this</span>.x, <span class="built_in">this</span>.y);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">interface</span> PointInstanceType &#123;</span><br><span class="line">    x: <span class="built_in">number</span>;</span><br><span class="line">    y: <span class="built_in">number</span>;</span><br><span class="line">    printPoint(): <span class="built_in">void</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> p1: Point;</span><br><span class="line"><span class="keyword">let</span> p2: PointInstanceType;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="泛型"><a href="#泛型" class="headerlink" title="泛型"></a>泛型</h2><p>泛型（Generics）是指在定义函数、接口或类的时候，不预先指定具体的类型，而在使用的时候再指定类型的一种特性。</p>
+<h3 id="多个类型参数"><a href="#多个类型参数" class="headerlink" title="多个类型参数"></a>多个类型参数</h3><figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">swap</span>&lt;<span class="title">T</span>, <span class="title">U</span>&gt;(<span class="params">tuple: [T, U]</span>): [<span class="title">U</span>, <span class="title">T</span>] </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> [tuple[<span class="number">1</span>], tuple[<span class="number">0</span>]];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">swap([<span class="number">7</span>, <span class="string">&#x27;seven&#x27;</span>]); <span class="comment">// [&#x27;seven&#x27;, 7]</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="泛型约束"><a href="#泛型约束" class="headerlink" title="泛型约束"></a>泛型约束</h3><p>我们可以对泛型进行约束，只允许这个函数传入那些包含 <code>length</code> 属性的变量。这就是泛型约束:</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">interface</span> Lengthwise &#123;</span><br><span class="line">    length: <span class="built_in">number</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">loggingIdentity</span>&lt;<span class="title">T</span> <span class="title">extends</span> <span class="title">Lengthwise</span>&gt;(<span class="params">arg: T</span>): <span class="title">T</span> </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(arg.length);  <span class="comment">//不然这里会报错</span></span><br><span class="line">    <span class="keyword">return</span> arg;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们使用了 <code>extends</code> 约束了泛型 <code>T</code> 必须符合接口 <code>Lengthwise</code> 的形状，也就是必须包含 <code>length</code> 属性。</p>
+<p>此时如果调用 <code>loggingIdentity</code> 的时候，传入的 <code>arg</code> 不包含 <code>length</code>，那么在编译阶段就会报错了。</p>
+<h2 id="声明合并"><a href="#声明合并" class="headerlink" title="声明合并"></a>声明合并</h2><p>如果定义了两个相同名字的函数、接口或类，那么它们会合并成一个类型：</p>
+<ul>
+<li><p>函数的合并</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">reverse</span>(<span class="params">x: <span class="built_in">number</span></span>): <span class="title">number</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">reverse</span>(<span class="params">x: <span class="built_in">string</span></span>): <span class="title">string</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">reverse</span>(<span class="params">x: <span class="built_in">number</span> | <span class="built_in">string</span></span>): <span class="title">number</span> | <span class="title">string</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">typeof</span> x === <span class="string">&#x27;number&#x27;</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">Number</span>(x.toString().split(<span class="string">&#x27;&#x27;</span>).reverse().join(<span class="string">&#x27;&#x27;</span>));</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="keyword">typeof</span> x === <span class="string">&#x27;string&#x27;</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> x.split(<span class="string">&#x27;&#x27;</span>).reverse().join(<span class="string">&#x27;&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>接口的合并</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">interface</span> Alarm &#123;</span><br><span class="line">    price: <span class="built_in">number</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">interface</span> Alarm &#123;</span><br><span class="line">    weight: <span class="built_in">number</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//相当于</span></span><br><span class="line"><span class="keyword">interface</span> Alarm &#123;</span><br><span class="line">    price: <span class="built_in">number</span>;</span><br><span class="line">    weight: <span class="built_in">number</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+
+
+      
+
+    </section>
+    
+      <section class='ArticleMeta'>
+          <div>
+            发布于&nbsp;
+            <time datetime="2020-06-13T05:29:55.000Z" itemprop="datePublished">
+              2020-06-13
+            </time>
+          </div>
+          
+      </section>
+    
+    
+</article>
+
+  
+</div>
+
+            <footer>
+    <div>© 2021 - XiChi </div>
+    <div>
+        <span>
+            Powered by <a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a>
+        </span>
+        ,
+        <span>
+            Theme - <a target="_blank" rel="noopener" href="https://github.com/nameoverflow/hexo-theme-icalm">Icalm</a>
+        </span>
+    </div>
+</footer>
+
+        </div>
+    </div>
+</div>
+
+<script src="/js/pager/dist/singlepager.js"></script>
+
+<script>
+var sp = new Pager('data-pager-shell')
+
+</script>
+</body>
+</html>

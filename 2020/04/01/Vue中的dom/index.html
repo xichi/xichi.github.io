@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Vue中的dom渲染 | 西池</title>
+  
+    <link rel="icon" href="http://njupt.xichi.xyz/homepage/me.jpg">
+  
+  
+  
+  <!--link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.10.0/styles/github-gist.min.css"-->
+  
+<link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.10.0/styles/github-gist.min.css">
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+<div class="Shell">
+    <aside class='SideBar'>
+    <section class='avatar' style="background-image: url()">
+        <div class='av-pic' style="background-image: url(http://njupt.xichi.xyz/homepage/me.jpg)">
+        </div>
+    </section>
+    <section class='menu'>
+        <div>西池</div>
+        
+        <ul>
+          
+            <a href="/" class="Btn">
+              <li>Home</li>
+            </a>  
+          
+            <a href="/archives/" class="Btn">
+              <li>Archive</li>
+            </a>  
+          
+        </ul>
+    </section>
+    <section class="media">
+        
+            
+                <a target="_blank" rel="noopener" href="https://github.com/1999-XiChi">
+                    <img src="/assets/github.svg" />
+                </a>
+            
+        
+    </section>
+</aside>
+
+    <div class="container">
+        <div data-pager-shell>
+            <div>
+  <article class='ContentView'>
+    <header class='PageTitle'>
+        <h1>Vue中的dom渲染</h1>
+    </header>
+
+    <section>
+      <p>Vue建议”数据驱动”，最好少直接操作dom。但很多时候想要写一些特殊动画效果时，不得不操作dom，一开始遇到了很多问题。但当我发现使用原生js是可以成功时，我明白是我对Vue中dom的渲染流程了解不足，于是去研究了相关内容。</p>
+<span id="more"></span> 
+
+<h2 id="1-生命周期与dom"><a href="#1-生命周期与dom" class="headerlink" title="1.生命周期与dom"></a>1.生命周期与dom</h2><h3 id="一个例子"><a href="#一个例子" class="headerlink" title="一个例子"></a>一个例子</h3><p><img src="http://njupt.xichi.xyz/blog/console.png"></p>
+<p>由此可见父组件和子组件都一样，在created()不能获取到dom，在mounted()可以获取到dom。而在<code>this.changValue = 1;</code>dom重新渲染后，update()也可以获取到dom。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">template</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;dv&quot;</span>&gt;</span>hello<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;dd&quot;</span> <span class="attr">ref</span>=<span class="string">&quot;book&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span>&gt;</span>&#123;&#123;changValue&#125;&#125;<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">vue-dom-child</span>&gt;</span><span class="tag">&lt;/<span class="name">vue-dom-child</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">template</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="javascript"><span class="keyword">import</span> vueDomChild <span class="keyword">from</span> <span class="string">&quot;./vueDomChild&quot;</span>;</span></span><br><span class="line"><span class="javascript"><span class="keyword">export</span> <span class="keyword">default</span> &#123;</span></span><br><span class="line">  components: &#123;</span><br><span class="line">    vueDomChild</span><br><span class="line">  &#125;,</span><br><span class="line"><span class="javascript">  <span class="function"><span class="title">data</span>(<span class="params"></span>)</span> &#123;</span></span><br><span class="line"><span class="javascript">    <span class="keyword">return</span> &#123;</span></span><br><span class="line"><span class="javascript">      changValue: <span class="literal">null</span></span></span><br><span class="line">    &#125;;</span><br><span class="line">  &#125;,</span><br><span class="line"><span class="javascript">  <span class="function"><span class="title">created</span>(<span class="params"></span>)</span> &#123;</span></span><br><span class="line"><span class="javascript">    <span class="built_in">console</span>.log(</span></span><br><span class="line"><span class="javascript">      <span class="string">&quot;我是父组件created()：&quot;</span>,</span></span><br><span class="line"><span class="javascript">      <span class="built_in">this</span>.$refs,</span></span><br><span class="line"><span class="javascript">      <span class="built_in">document</span>.querySelector(<span class="string">&quot;.dv&quot;</span>)</span></span><br><span class="line">    );</span><br><span class="line">  &#125;,</span><br><span class="line"><span class="javascript">  <span class="function"><span class="title">updated</span>(<span class="params"></span>)</span> &#123;</span></span><br><span class="line"><span class="javascript">      <span class="comment">//DOM现在更新了</span></span></span><br><span class="line"><span class="javascript">      <span class="built_in">console</span>.log(</span></span><br><span class="line"><span class="javascript">        <span class="string">&quot;我是父组件updated()：&quot;</span>,</span></span><br><span class="line"><span class="javascript">        <span class="built_in">this</span>.$refs,</span></span><br><span class="line"><span class="javascript">        <span class="built_in">document</span>.querySelector(<span class="string">&quot;.dv&quot;</span>)</span></span><br><span class="line">      );</span><br><span class="line">  &#125;,</span><br><span class="line"><span class="javascript">  <span class="function"><span class="title">mounted</span>(<span class="params"></span>)</span> &#123;</span></span><br><span class="line"><span class="javascript">    <span class="built_in">this</span>.changValue = <span class="number">1</span>;</span></span><br><span class="line"><span class="javascript">    <span class="built_in">console</span>.log(</span></span><br><span class="line"><span class="javascript">      <span class="string">&quot;我是父组件mounted()：&quot;</span>,</span></span><br><span class="line"><span class="javascript">      <span class="built_in">this</span>.$refs,</span></span><br><span class="line"><span class="javascript">      <span class="built_in">document</span>.querySelector(<span class="string">&quot;.dv&quot;</span>)</span></span><br><span class="line">    );</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>所以，如果一个组件并没有一开始异步加载数据，你当然可以在mounted钩子操作dom。</p>
+<p>但是，如果你想要在<strong>异步获取到数据</strong>后再调用相应的dom，可以：</p>
+<ul>
+<li>created异步加载数据</li>
+<li>update操作dom</li>
+</ul>
+<p>当在created钩子中获取数据的时候，vue本身不知道你在created中还要更新数据，已经通过初始数据把vue组件mounted挂载完成了，当你created中的异步数据回来后是不会再次触发mounted的，但是会触发updated钩子，所以你可以放到updated钩子（数据变化，重新更新dom）中处理。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">created() &#123;</span><br><span class="line">   this.getSongList();											   &#x2F;&#x2F;获取网易云音乐歌单</span><br><span class="line"> &#125;,</span><br><span class="line"> updated() &#123;</span><br><span class="line">   console.log(document.querySelector(&#39;.volume&#39;));					 &#x2F;&#x2F;控制dom改变音量</span><br><span class="line">   &#x2F;&#x2F;代码块省略</span><br><span class="line"> &#125;,</span><br><span class="line"> mounted() &#123;</span><br><span class="line">   this.playMusic();											  &#x2F;&#x2F;播放音乐</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="2-深入响应式原理"><a href="#2-深入响应式原理" class="headerlink" title="2.深入响应式原理"></a>2.深入响应式原理</h2><p>总结于官方文档。</p>
+<h3 id="1-追踪变化"><a href="#1-追踪变化" class="headerlink" title="(1).追踪变化"></a>(1).追踪变化</h3><p>当你把一个普通的 JavaScript 对象传入 Vue 实例作为 <code>data</code> 选项，Vue 将遍历此对象所有的属性，并使用 <a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty"><code>Object.defineProperty</code></a> 把这些属性全部转为 <a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Guide/Working_with_Objects#%E5%AE%9A%E4%B9%89_getters_%E4%B8%8E_setters">getter/setter</a>。</p>
+<p>每个组件实例都对应一个 <strong>watcher</strong> 实例，它会在组件渲染的过程中把“接触”过的数据属性记录为依赖。之后当依赖项的 setter 触发时，会通知 watcher，从而使它关联的组件重新渲染。</p>
+<p><img src="http://njupt.xichi.xyz/blog/20200316212632.png"></p>
+<h3 id="2-检测变化的注意事项"><a href="#2-检测变化的注意事项" class="headerlink" title="(2).检测变化的注意事项"></a>(2).检测变化的注意事项</h3><ol>
+<li><p>Vue 无法检测到对象属性的添加或删除</p>
+</li>
+<li><p>对于已经创建的实例，Vue 不允许动态添加根级别的响应式属性,</p>
+<p>但可以使用<code>this.$set(this.someObject,&#39;b&#39;,2)</code></p>
+</li>
+</ol>
+<h3 id="3-异步更新队列"><a href="#3-异步更新队列" class="headerlink" title="(3).异步更新队列"></a>(3).异步更新队列</h3><p>Vue 在更新 DOM 时是<strong>异步</strong>执行的。只要侦听到数据变化，Vue 将开启一个队列，并缓冲在同一事件循环中发生的所有数据变更。例如，当你设置 <code>vm.someData = &#39;new value&#39;</code>，该组件不会立即重新渲染。当刷新队列时，组件会在下一个事件循环“tick”中更新。</p>
+<p><strong>使用<code>Vue.nextTick(callback)</code>强制刷新</strong></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">methods: &#123;</span><br><span class="line">    updateMessage: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">      <span class="built_in">this</span>.message = <span class="string">&#x27;已更新&#x27;</span></span><br><span class="line">      <span class="built_in">console</span>.log(<span class="built_in">this</span>.$el.textContent) <span class="comment">// =&gt; &#x27;未更新&#x27;</span></span><br><span class="line">      <span class="built_in">this</span>.$nextTick(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="built_in">this</span>.$el.textContent) <span class="comment">// =&gt; &#x27;已更新&#x27;</span></span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//因为$nextTick()返回一个Promise对象，或者可以使用ES2017语法</span></span><br><span class="line">methods: &#123;</span><br><span class="line">  updateMessage: <span class="keyword">async</span> <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">this</span>.message = <span class="string">&#x27;已更新&#x27;</span></span><br><span class="line">    <span class="built_in">console</span>.log(<span class="built_in">this</span>.$el.textContent) <span class="comment">// =&gt; &#x27;未更新&#x27;</span></span><br><span class="line">    <span class="keyword">await</span> <span class="built_in">this</span>.$nextTick()</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="built_in">this</span>.$el.textContent) <span class="comment">// =&gt; &#x27;已更新&#x27;</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="3-探索Vue源码"><a href="#3-探索Vue源码" class="headerlink" title="3.探索Vue源码"></a>3.探索Vue源码</h2><h3 id="1-Virtual-Dom"><a href="#1-Virtual-Dom" class="headerlink" title="(1). Virtual Dom"></a>(1). Virtual Dom</h3><p>当不断的通过<code>JS</code>修改<code>DOM</code>时，不经意间会触发到<a href="https://blog.xichi.xyz/2020/03/03/%E6%B5%8F%E8%A7%88%E5%99%A8%E6%B8%B2%E6%9F%93%E6%9C%BA%E5%88%B6/">渲染引擎的回流或者重绘</a>，而这个性能开销是非常巨大的。因此为了降低开销，我们可以做的是尽可能减少<code>DOM</code>操作。</p>
+<h4 id="缓冲层——虚拟DOM"><a href="#缓冲层——虚拟DOM" class="headerlink" title="缓冲层——虚拟DOM"></a>缓冲层——虚拟<code>DOM</code></h4><p>虚拟<code>DOM</code>是优化频繁操作<code>DOM</code>引发性能问题的产物。将多个改动合并成一个批量的操作，从而减少 <code>dom</code> 重排的次数。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 真实DOM</span></span><br><span class="line">&lt;div id=<span class="string">&quot;real&quot;</span>&gt;<span class="xml"><span class="tag">&lt;<span class="name">span</span>&gt;</span>dom<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span>&lt;/div&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 真实DOM对应的JS对象</span></span><br><span class="line">&#123;</span><br><span class="line">    tag: <span class="string">&#x27;div&#x27;</span>,</span><br><span class="line">    data: &#123;</span><br><span class="line">        id: <span class="string">&#x27;real&#x27;</span></span><br><span class="line">    &#125;,</span><br><span class="line">    children: [&#123;</span><br><span class="line">        tag: <span class="string">&#x27;span&#x27;</span>,</span><br><span class="line">        children: <span class="string">&#x27;dom&#x27;</span></span><br><span class="line">    &#125;]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="4-简单写写Virtual-Dom"><a href="#4-简单写写Virtual-Dom" class="headerlink" title="4.简单写写Virtual Dom"></a>4.简单写写Virtual Dom</h2><p>算法实现：</p>
+<ul>
+<li>用JS对象模拟DOM树</li>
+<li>比较两棵虚拟DOM树的差异 (diff算法)</li>
+<li>把差异应用到真正的DOM树上</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//作者：戴嘉华</span></span><br><span class="line"><span class="comment">//链接：https://www.zhihu.com/question/29504639/answer/73607810</span></span><br><span class="line"><span class="comment">//来源：知乎</span></span><br><span class="line"><span class="comment">//著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 1. 构建虚拟DOM</span></span><br><span class="line"><span class="keyword">var</span> tree = el(<span class="string">&#x27;div&#x27;</span>, &#123;<span class="string">&#x27;id&#x27;</span>: <span class="string">&#x27;container&#x27;</span>&#125;, [</span><br><span class="line">    el(<span class="string">&#x27;h1&#x27;</span>, &#123;<span class="attr">style</span>: <span class="string">&#x27;color: blue&#x27;</span>&#125;, [<span class="string">&#x27;simple virtal dom&#x27;</span>]),</span><br><span class="line">    el(<span class="string">&#x27;p&#x27;</span>, [<span class="string">&#x27;Hello, virtual-dom&#x27;</span>]),</span><br><span class="line">    el(<span class="string">&#x27;ul&#x27;</span>, [el(<span class="string">&#x27;li&#x27;</span>)])</span><br><span class="line">])</span><br><span class="line"></span><br><span class="line"><span class="comment">// 2. 通过虚拟DOM构建真正的DOM</span></span><br><span class="line"><span class="keyword">var</span> root = tree.render()</span><br><span class="line"><span class="built_in">document</span>.body.appendChild(root)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 3. 生成新的虚拟DOM</span></span><br><span class="line"><span class="keyword">var</span> newTree = el(<span class="string">&#x27;div&#x27;</span>, &#123;<span class="string">&#x27;id&#x27;</span>: <span class="string">&#x27;container&#x27;</span>&#125;, [</span><br><span class="line">    el(<span class="string">&#x27;h1&#x27;</span>, &#123;<span class="attr">style</span>: <span class="string">&#x27;color: red&#x27;</span>&#125;, [<span class="string">&#x27;simple virtal dom&#x27;</span>]),</span><br><span class="line">    el(<span class="string">&#x27;p&#x27;</span>, [<span class="string">&#x27;Hello, virtual-dom&#x27;</span>]),</span><br><span class="line">    el(<span class="string">&#x27;ul&#x27;</span>, [el(<span class="string">&#x27;li&#x27;</span>), el(<span class="string">&#x27;li&#x27;</span>)])</span><br><span class="line">])</span><br><span class="line"></span><br><span class="line"><span class="comment">// 4. 比较两棵虚拟DOM树的不同</span></span><br><span class="line"><span class="keyword">var</span> patches = diff(tree, newTree)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 5. 在真正的DOM元素上应用变更</span></span><br><span class="line">patch(root, patches)</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="构建虚拟DOM"><a href="#构建虚拟DOM" class="headerlink" title="构建虚拟DOM"></a>构建虚拟DOM</h3><p><a target="_blank" rel="noopener" href="http://scriptoj.mangojuice.top/problems/93">#93 Virtual DOM</a></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">VNode</span> </span>&#123;</span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params">tagName, props, children</span>)</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.tagName = tagName;</span><br><span class="line">    <span class="built_in">this</span>.props = props;</span><br><span class="line">    <span class="built_in">this</span>.children = children;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> h = <span class="function"><span class="keyword">function</span> (<span class="params">tagName, props, children</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> VNode(tagName, props, children);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="通过虚拟DOM构建真正的DOM"><a href="#通过虚拟DOM构建真正的DOM" class="headerlink" title="通过虚拟DOM构建真正的DOM"></a>通过虚拟DOM构建真正的DOM</h3><p><a target="_blank" rel="noopener" href="http://scriptoj.mangojuice.top/problems/95">#95 Virtual DOM（二）</a></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">VNode</span> </span>&#123;</span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params">tagName, props, children</span>)</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.tagName = tagName;</span><br><span class="line">    <span class="built_in">this</span>.props = props;</span><br><span class="line">    <span class="built_in">this</span>.children = children;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">VNode.prototype.render = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">var</span> node = <span class="built_in">document</span>.createElement(<span class="built_in">this</span>.tagName);</span><br><span class="line"></span><br><span class="line">  <span class="built_in">Object</span>.entries(<span class="built_in">this</span>.props).forEach(<span class="function">(<span class="params">[key, value]</span>) =&gt;</span></span><br><span class="line">    node.setAttribute(key, value)</span><br><span class="line">  );</span><br><span class="line"></span><br><span class="line">  <span class="built_in">this</span>.children.forEach(<span class="function"><span class="params">child</span> =&gt;</span> &#123;</span><br><span class="line">    node.appendChild(</span><br><span class="line">      child <span class="keyword">instanceof</span> VNode</span><br><span class="line">        ? child.render()</span><br><span class="line">        : <span class="built_in">document</span>.createTextNode(child)</span><br><span class="line">    );</span><br><span class="line">  &#125;);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> node;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="比较两棵虚拟DOM树的不同-diff算法"><a href="#比较两棵虚拟DOM树的不同-diff算法" class="headerlink" title="比较两棵虚拟DOM树的不同(diff算法)"></a>比较两棵虚拟DOM树的不同(diff算法)</h3><p>两个树的完全的 diff 算法是一个时间复杂度为 O(n^3) 的问题。但是在前端当中，你很少会跨越层级地移动DOM元素。所以 Virtual DOM 只会对同一个层级的元素进行对比：上面的div只会和同一层级的div对比，第二层级的只会跟第二层级对比。这样算法复杂度就可以达到 O(n)。</p>
+<p><img src="http://njupt.xichi.xyz/blog/20200317193149.png"></p>
+<h4 id="1-深度优先遍历，记录差异"><a href="#1-深度优先遍历，记录差异" class="headerlink" title="1).深度优先遍历，记录差异"></a>1).深度优先遍历，记录差异</h4><p><img src="http://njupt.xichi.xyz/blog/20200317193602.png"></p>
+<h4 id="2-差异类型"><a href="#2-差异类型" class="headerlink" title="2).差异类型"></a>2).差异类型</h4><p><img src="http://njupt.xichi.xyz/blog/20200317200804.png"></p>
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><ol>
+<li><p><a target="_blank" rel="noopener" href="https://cn.vuejs.org/v2/guide/reactivity.html">深入响应式原理</a>  Vue官方文档</p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/79833863">深入剖析Vue源码 - 完整渲染过程</a> 分析了<code>mountComponent</code>的两个核心方法，<code>render</code>和<code>update</code>,他们分别完成对<code>render</code>函数转化为<code>Virtual DOM</code>和将<code>Virtual DOM</code>映射为真实<code>DOM</code> 的过程。</p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://www.zhihu.com/question/29504639/answer/73607810">如何理解虚拟DOM? - 戴嘉华的回答 - 知乎</a>   写得很详细，github也上传相应源码</p>
+</li>
+<li><p>scriptOj的题目：<a target="_blank" rel="noopener" href="http://scriptoj.mangojuice.top/problems/93">#93 Virtual DOM</a> 、<a target="_blank" rel="noopener" href="http://scriptoj.mangojuice.top/problems/95">#95 Virtual DOM（二）</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/57974487">Virtual Dom &amp;&amp; Diff原理，极简版 - dykily的文章 - 知乎</a>  详细讲解了diff算法</p>
+</li>
+</ol>
+
+
+      
+
+    </section>
+    
+      <section class='ArticleMeta'>
+          <div>
+            发布于&nbsp;
+            <time datetime="2020-04-01T05:29:55.000Z" itemprop="datePublished">
+              2020-04-01
+            </time>
+          </div>
+          
+            <div>
+              tags: 
+  <li class="meta-text">
+  { <a href="/tags/Vue/">Vue</a> }
+  </li>
+
+
+            </div>
+          
+      </section>
+    
+    
+</article>
+
+  
+</div>
+
+            <footer>
+    <div>© 2021 - XiChi </div>
+    <div>
+        <span>
+            Powered by <a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a>
+        </span>
+        ,
+        <span>
+            Theme - <a target="_blank" rel="noopener" href="https://github.com/nameoverflow/hexo-theme-icalm">Icalm</a>
+        </span>
+    </div>
+</footer>
+
+        </div>
+    </div>
+</div>
+
+<script src="/js/pager/dist/singlepager.js"></script>
+
+<script>
+var sp = new Pager('data-pager-shell')
+
+</script>
+</body>
+</html>
